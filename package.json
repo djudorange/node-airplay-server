@@ -1,0 +1,22 @@
+{
+  "name": "airplay-server",
+  "version": "0.0.1",
+  "description": "Airplay Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nearinfinity/node-airplay-server.git"
+  },
+  "keywords": [
+    "airplay",
+    "server"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "mdns": "0.0.7"
+  }
+}
