@@ -6,32 +6,81 @@ var airplay = require('../');
 
 var server = airplay.createServer();
 
+var playInterval = null;
+var defaultVideoPlayback = {
+  readyToPlay: true,
+  duration: 25,
+  loadedTimeRangesDuration: 25,
+  loadedTimeRangesStart: 0.0,
+  position: 0.0,
+  seekableTimeRangesDuration: 25,
+  seekableTimeRangesStart: 0.0,
+  rate: 0.0
+};
+
 server.on('error', function(error) {
   console.log('error', error);
 });
 
 server.on('play', function(data) {
   console.log('play', data);
-  var body =
-    '<?xml version="1.0" encoding="UTF-8"?>\n'
-      + '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n'
-      + '<plist version="1.0">\n'
-      + '<dict>\n'
-      + '\t<key>category</key>\n'
-      + '\t<string>video</string>\n'
-      + '\t<key>state</key>\n'
-      + '\t<string>loading</string>\n'
-      + '</dict>\n'
-      + '</plist>\n';
-  server.sendEvent(body);
+  server.sendEvent({
+    category: 'video',
+    state: 'loading'
+  });
+
+  setTimeout(function() {
+    console.log('readyToPlay');
+    server.videoPlayback = server.videoPlayback || defaultVideoPlayback;
+    server.videoPlayback.rate = 1.0;
+    server.sendEvent({
+      category: 'video',
+      state: 'paused'
+    });
+    server.sendEvent({
+      category: 'video',
+      state: 'playing'
+    });
+
+    playInterval = setInterval(function() {
+      server.videoPlayback.position = parseFloat(server.videoPlayback.position) + (parseFloat(server.videoPlayback.rate) / 10);
+      if (server.videoPlayback.position > server.videoPlayback.duration) {
+        server.videoPlayback.position = parseFloat(server.videoPlayback.duration);
+        server.sendEvent({
+          category: 'video',
+          state: 'paused'
+        });
+      }
+    }, 100);
+  }, 3000);
 });
 
 server.on('stop', function(data) {
   console.log('stop', data);
+  clearInterval(playInterval);
+});
+
+server.on('scrub', function(data) {
+  server.videoPlayback = server.videoPlayback || defaultVideoPlayback;
+  server.videoPlayback.position = parseFloat(data.position);
+  console.log('scrub position', server.videoPlayback.position);
 });
 
 server.on('rate', function(data) {
   console.log('rate', data);
+  server.videoPlayback = server.videoPlayback || defaultVideoPlayback;
+  server.videoPlayback.rate = parseFloat(data.value);
+  if (server.videoPlayback.rate == 0) {
+    server.sendEvent({
+      category: 'video',
+      state: 'paused'
+    });
+  } else {
+    server.sendEvent({
+      category: 'video',
+      state: 'playing'
+    });
+  }
 });
 
 server.start();
