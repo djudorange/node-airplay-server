@@ -20,7 +20,8 @@
     "mdns": "0.0.7",
     "express": "~3.0.0rc4",
     "stream-buffers": "~0.2.3",
-    "bplist-parser": "0.0.4"
+    "bplist-parser": "0.0.4",
+    "parsley": "git://github.com/nearinfinity/node-parsley.git"
   },
   "devDependencies": {
     "mocha": "~1.4.2",
