@@ -21,7 +21,8 @@
     "express": "~3.0.0rc4",
     "stream-buffers": "~0.2.3",
     "bplist-parser": "0.0.4",
-    "parsley": "git://github.com/nearinfinity/node-parsley.git"
+    "parsley": "git://github.com/nearinfinity/node-parsley.git",
+    "binary": "~0.3.0"
   },
   "devDependencies": {
     "mocha": "~1.4.2",
